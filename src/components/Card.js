@@ -32,7 +32,7 @@ export default function Card({
 
       <div className="card-body">
         <TextSection heading={title} text={description} />
-        <CustomButton button={button} onClick={onClick} />
+        {/* Removed main button as requested */}
       </div>
     </div>
   );
