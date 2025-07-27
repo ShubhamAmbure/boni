@@ -1,8 +1,12 @@
 
-const CustomButton = ({ onClick, button, className }) => (
+
+
+
+const CustomButton = ({ onClick, button, className = "" }) => (
   <button
     onClick={onClick}
-    className={`text-base font-medium rounded ${className}`}
+    className={`formal-btn ${className}`.trim()}
+    type="button"
   >
     {button}
   </button>

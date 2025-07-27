@@ -2,7 +2,6 @@
 "use client";
 import { getAllPages, deletePage } from "@/lib/storage";
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import CustomButton from "@/components/CustomButton";
 import Card from "@/components/Card";
@@ -38,19 +37,27 @@ export default function Home() {
         </div>
       ) : (
         <div className="row g-4">
-          {Object.keys(pages).map((slug) => (
-            <div className="col-12 col-sm-6 col-md-4" key={slug}>
-              <Card
-                title={pages[slug].title}
-                alt={pages[slug].alt}
-                description={pages[slug].discription}
-                button={pages[slug].button}
-                deleteButton={() => handleDelete(slug)}
-                onClick={() => router.push(`/${slug}`)}
-                src={pages[slug].src}
-              />
-            </div>
-          ))}
+          {Object.keys(pages).map((slug) => {
+            const page = pages[slug];
+            let props = {};
+            if (Array.isArray(page) && page[0] && page[0].props) {
+              props = page[0].props;
+            } else if (typeof page === 'object' && page !== null) {
+              props = page;
+            }
+            return (
+              <div className="col-12 col-sm-6 col-md-4" key={slug}>
+                <Card
+                  title={props.title || "No Title"}
+                  alt={props.alt || "Image"}
+                  description={props.description || "No description provided"}
+                  deleteButton={() => handleDelete(slug)}
+                  // onClick can be added if needed
+                  src={props.src || "/default.jpg"}
+                />
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

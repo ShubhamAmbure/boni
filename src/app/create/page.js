@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { savePage } from "@/lib/storage";
-import CustomLabel from "@/components/CustomLabel";
 import CustomInputField from "@/components/CustomInputField";
 import CustomButton from "@/components/CustomButton";
 
@@ -79,9 +78,9 @@ export default function CreatePage() {
             className="border rounded p-4 bg-light mb-4"
           >
             <div className="mb-3">
-              <CustomLabel htmlFor={`slug-${index}`}>
+              <label htmlFor={`slug-${index}`} className="form-label fw-bold">
                 Slug {index + 1}:
-              </CustomLabel>
+              </label>
               <CustomInputField
                 id={`slug-${index}`}
                 value={entry.slug}
@@ -98,9 +97,9 @@ export default function CreatePage() {
 
             {["src", "alt", "title", "description"].map((field) => (
               <div className="mb-3" key={field}>
-                <CustomLabel htmlFor={`${field}-${index}`}>
+                <label htmlFor={`${field}-${index}`} className="form-label">
                   {field}:
-                </CustomLabel>
+                </label>
                 <CustomInputField
                   id={`${field}-${index}`}
                   value={entry.bloc[field]}
