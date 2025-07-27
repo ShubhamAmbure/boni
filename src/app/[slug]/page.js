@@ -1,86 +1,69 @@
+import React from "react";
+import Card from "../../components/Card";
+import TextSection from "../../components/TextSection";
+import ImageBlock from "../../components/ImageBlock";
+import StatsBox from "../../components/StatsBox";
+import CustomButton from "../../components/CustomButton";
+async function getPageData(slug) {
+  // Fetch from API route (in-memory)
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || ""}/api/pages`, { cache: "no-store" });
+  if (!res.ok) return null;
+  const pages = await res.json();
+  return pages.find((p) => p.slug === slug) || null;
+}
 
-"use client";
-
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import CustomButton from "@/components/CustomButton";
-import ImageBlock from "@/components/ImageBlock";
-
-const Page = ({ params }) => {
-  const slug = params.slug;
-  const router = useRouter();
-  const [data, setData] = useState(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const res = await fetch(`/api/pages/${slug}`);
-      if (res.ok) {
-        const result = await res.json();
-        setData(result);
-      } else {
-        setData({ notFound: true });
-      }
-    };
-    fetchData();
-  }, [slug]);
-
-  const handleCreateRedirect = () => {
-    router.push("/");
-  };
-
-  if (!data) {
+export default async function Page({ params }) {
+  const { slug } = params;
+  const pageData = await getPageData(slug);
+  if (!pageData) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <p className="text-lg text-gray-600 animate-pulse">Loading...</p>
-      </div>
-    );
-  }
-
-  if (data.notFound) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen px-6 py-10 bg-gradient-to-br from-blue-50 to-white">
-        <div className="max-w-xl w-full bg-white shadow-lg rounded-xl p-8 text-center border border-gray-200">
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">Page Not Found</h1>
-          <p className="text-gray-600 text-lg mb-6">
-            Sorry, we couldn't find the page you're looking for.
-          </p>
-          <CustomButton
-            onClick={handleCreateRedirect}
-            button="Return Home"
-            className="mt-4 w-full px-6 py-3 rounded-md bg-blue-600 text-white font-medium hover:bg-blue-700 transition duration-200"
-          />
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #f8fafc 0%, #e0e7ef 100%)' }}>
+        <div style={{ background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px 0 rgba(30, 64, 175, 0.08)', padding: 48, textAlign: 'center', border: '1px solid #e5e7eb' }}>
+          <h1 style={{ fontSize: 32, fontWeight: 700, color: '#1e293b', marginBottom: 16 }}>Page Not Found</h1>
+          <p style={{ color: '#64748b', fontSize: 18, marginBottom: 24 }}>Sorry, we couldn't find the page you're looking for.</p>
+          <a href="/" className="formal-btn" style={{ display: 'inline-block', minWidth: 120 }}>Return Home</a>
         </div>
       </div>
     );
   }
-
   return (
-    <div className="min-h-screen bg-gray-50 px-4 py-10">
-      <div className="max-w-5xl mx-auto bg-white p-8 rounded-xl shadow-lg border border-gray-200">
-        <h1 className="text-4xl font-bold text-gray-900 mb-10 border-b pb-4">
-          Page: <span className="text-blue-600">{slug}</span>
-        </h1>
-        <div className="space-y-8">
-          {data?.components?.map((component, index) => (
-            <div
-              key={index}
-              className="rounded-lg bg-gray-100 p-6 shadow-sm hover:shadow-md transition"
+    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #f8fafc 0%, #e0e7ef 100%)', padding: '40px 0' }}>
+      <div style={{ maxWidth: 800, margin: '0 auto', background: '#fff', borderRadius: 20, boxShadow: '0 4px 24px 0 rgba(30, 64, 175, 0.10)', padding: 40, border: '1px solid #e5e7eb' }}>
+        <h1 style={{ fontSize: 36, fontWeight: 700, color: '#2563eb', marginBottom: 32, letterSpacing: 0.5 }}>Page: <span style={{ color: '#1e293b' }}>{slug}</span></h1>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
+          {pageData.components.map((block, idx) => (
+            <section
+              key={idx}
+              style={{
+                background: '#f1f5f9',
+                borderRadius: 14,
+                boxShadow: '0 2px 8px 0 rgba(37, 99, 235, 0.06)',
+                padding: 28,
+                transition: 'box-shadow 0.2s',
+                border: '1px solid #e0e7ef',
+              }}
             >
-              <ImageBlock
-                src={component.images}
-                alt={component.alt}
-                className="rounded-md w-full max-h-[400px] object-cover mb-4"
-              />
-              <h2 className="text-2xl font-semibold text-gray-800 mb-2">
-                {component.title}
-              </h2>
-              <p className="text-gray-700">{component.description}</p>
-            </div>
+              {(() => {
+                switch (block.type) {
+                  case "Card":
+                    return <Card {...block.props} />;
+                  case "TextSection":
+                    return <TextSection {...block.props} />;
+                  case "ImageBlock":
+                    return <ImageBlock {...block.props} />;
+                  case "StatsBox":
+                    return <StatsBox {...block.props} />;
+                  case "CustomButton":
+                    return <div style={{ marginTop: 16 }}><CustomButton {...block.props} /></div>;
+                  default:
+                    return null;
+                }
+              })()}
+            </section>
           ))}
         </div>
       </div>
     </div>
   );
-};
+}
 
-export default Page;
