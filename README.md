@@ -81,7 +81,7 @@ curl -X POST https://<your-deployment-url>/api/pages \
 - CustomButton (CTA)
 
 ## Deployment
-Deploy on [Vercel](https://vercel.com/) or [Render](https://render.com/). Replace `<your-deployment-url>` above with your live URL.
+Deploy on [Vercel](https://vercel.com/) above with your live URL.
 
 ---
 
